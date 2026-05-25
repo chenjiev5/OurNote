@@ -11,7 +11,9 @@
       "Bash(cp -r /Users/dongfangshuye/Desktop/OurNote/js /Users/dongfangshuye/Desktop/OurNote/www/)",
       "Bash(cp -r /Users/dongfangshuye/Desktop/OurNote/data /Users/dongfangshuye/Desktop/OurNote/www/)",
       "Bash(java -version)",
-      "Bash(./gradlew assembleDebug)"
+      "Bash(./gradlew assembleDebug)",
+      "Bash(npm list *)",
+      "Bash(node *)"
     ]
   }
 }

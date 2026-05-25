@@ -1,9 +1,12 @@
 // Service Worker for PWA - 离线支持
-const CACHE_NAME = 'expense-tracker-v1';
+const CACHE_NAME = 'expense-tracker-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './icon.png',
+  './icon-192.png',
+  './icon-512.png',
   './css/styles.css',
   './js/app.js',
   './js/db.js',
