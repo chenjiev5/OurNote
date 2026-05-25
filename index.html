@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#D4A574">
+    <title>花销追踪</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 记账本选择页面 -->
+        <div id="ledger-select-page" class="page">
+            <div class="welcome-header">
+                <div class="logo-icon">💰</div>
+                <h1>花销追踪</h1>
+                <p class="welcome-subtitle">轻松记录每一笔花销</p>
+            </div>
+            <div class="container">
+                <div class="section-title">选择记账本开始使用</div>
+                <div id="ledger-list" class="ledger-list"></div>
+                <button id="new-ledger-btn" class="btn btn-primary btn-add">
+                    <span class="btn-icon">+</span>
+                    新建记账本
+                </button>
+            </div>
+        </div>
+
+        <!-- 主应用页面 -->
+        <div id="main-app" class="page hidden">
+            <nav id="sidebar" class="sidebar"></nav>
+            <main id="main-content" class="content"></main>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/fileStorage.js"></script>
+    <script src="js/ledger.js"></script>
+    <script src="js/expense.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- PWA 安装提示 -->
+    <div id="pwa-install-prompt" class="pwa-prompt hidden">
+        <div class="pwa-prompt-content">
+            <p>添加到主屏幕可更方便使用</p>
+            <div class="pwa-prompt-buttons">
+                <button id="pwa-install-btn" class="btn btn-primary">安装</button>
+                <button id="pwa-later-btn" class="btn btn-secondary">稍后</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .pwa-prompt {
+            position: fixed;
+            bottom: 80px;
+            left: 16px;
+            right: 16px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+        .pwa-prompt-content p {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .pwa-prompt-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        .pwa-prompt-buttons .btn {
+            flex: 1;
+        }
+        @media (min-width: 768px) {
+            .pwa-prompt {
+                bottom: 20px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                max-width: 320px;
+            }
+        }
+    </style>
+
+    <script>
+        // PWA 安装逻辑
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            setTimeout(() => {
+                const shown = localStorage.getItem('pwaPromptShown');
+                if (!shown) {
+                    document.getElementById('pwa-install-prompt').classList.remove('hidden');
+                }
+            }, 3000);
+        });
+
+        document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    localStorage.setItem('pwaPromptShown', 'true');
+                }
+                deferredPrompt = null;
+                document.getElementById('pwa-install-prompt').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('pwa-later-btn')?.addEventListener('click', () => {
+            localStorage.setItem('pwaPromptShown', Date.now().toString());
+            document.getElementById('pwa-install-prompt').classList.add('hidden');
+        });
+
+        // 注册 Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((reg) => console.log('Service Worker 注册成功'))
+                    .catch((err) => console.log('Service Worker 注册失败:', err));
+            });
+        }
+    </script>
+</body>
+</html>

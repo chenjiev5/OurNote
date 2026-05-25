@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(pkill -f \"python3 -m http.server\")",
+      "Bash(npx skills *)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx cap *)",
+      "Bash(cp -r /Users/dongfangshuye/Desktop/OurNote/css /Users/dongfangshuye/Desktop/OurNote/www/)",
+      "Bash(cp -r /Users/dongfangshuye/Desktop/OurNote/js /Users/dongfangshuye/Desktop/OurNote/www/)",
+      "Bash(cp -r /Users/dongfangshuye/Desktop/OurNote/data /Users/dongfangshuye/Desktop/OurNote/www/)",
+      "Bash(java -version)",
+      "Bash(./gradlew assembleDebug)"
+    ]
+  }
+}

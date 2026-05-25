@@ -1,0 +1,8 @@
+{"type":"server-started","port":51995,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:51995","screen_dir":"/Users/dongfangshuye/Desktop/OurNote/.superpowers/brainstorm/92233-1779690179/content","state_dir":"/Users/dongfangshuye/Desktop/OurNote/.superpowers/brainstorm/92233-1779690179/state"}
+{"type":"screen-added","file":"/Users/dongfangshuye/Desktop/OurNote/.superpowers/brainstorm/92233-1779690179/content/color-theme.html"}
+{"type":"screen-added","file":"/Users/dongfangshuye/Desktop/OurNote/.superpowers/brainstorm/92233-1779690179/content/layout.html"}
+{"source":"user-event","type":"click","text":"A\n    \n      Tab 导航\n      底部 Tab 导航（手机）/ 侧边栏（电脑）\n      记账本 | 记一笔 | 统计 | 我的","choice":"tab","id":null,"timestamp":1779690240272}
+{"source":"user-event","type":"click","text":"A\n    \n      Tab 导航\n      底部 Tab 导航（手机）/ 侧边栏（电脑）\n      记账本 | 记一笔 | 统计 | 我的","choice":"tab","id":null,"timestamp":1779690240929}
+{"source":"user-event","type":"click","text":"A\n    \n      Tab 导航\n      底部 Tab 导航（手机）/ 侧边栏（电脑）\n      记账本 | 记一笔 | 统计 | 我的","choice":"tab","id":null,"timestamp":1779690241356}
+{"type":"screen-added","file":"/Users/dongfangshuye/Desktop/OurNote/.superpowers/brainstorm/92233-1779690179/content/calendar.html"}
+{"type":"server-stopped","reason":"idle timeout"}
