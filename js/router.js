@@ -8,11 +8,50 @@ const Router = {
     ],
 
     currentTab: null,
+    touchStartX: 0,
+    touchEndX: 0,
+    minSwipeDistance: 50,
 
     init() {
         this.renderSidebar();
         // 默认切换到记一笔页面（首页用于切换记账本）
         this.switchTab('add');
+        // 初始化滑动手势
+        this.initSwipeGesture();
+    },
+
+    // 初始化滑动手势
+    initSwipeGesture() {
+        const content = document.getElementById('main-content');
+
+        content.addEventListener('touchstart', (e) => {
+            this.touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        content.addEventListener('touchend', (e) => {
+            this.touchEndX = e.changedTouches[0].screenX;
+            this.handleSwipe();
+        }, { passive: true });
+    },
+
+    // 处理滑动手势
+    handleSwipe() {
+        const diff = this.touchStartX - this.touchEndX;
+        const currentIndex = this.tabs.findIndex(t => t.id === this.currentTab);
+
+        if (Math.abs(diff) < this.minSwipeDistance) return;
+
+        if (diff > 0) {
+            // 向左滑 → 下一个 Tab
+            if (currentIndex < this.tabs.length - 1) {
+                this.switchTab(this.tabs[currentIndex + 1].id);
+            }
+        } else {
+            // 向右滑 → 上一个 Tab
+            if (currentIndex > 0) {
+                this.switchTab(this.tabs[currentIndex - 1].id);
+            }
+        }
     },
 
     renderSidebar() {
