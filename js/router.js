@@ -43,6 +43,7 @@ const Router = {
         }, { passive: true });
 
         mainApp.addEventListener('touchmove', (e) => {
+            // 排除输入框和按钮的滑动
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' ||
                 e.target.tagName === 'SELECT' || e.target.closest('button')) return;
             if (this.isAnimating) return;
@@ -52,7 +53,12 @@ const Router = {
             // 限制最大滑动距离
             const offset = Math.max(-30, Math.min(30, percent));
             mainApp.style.transform = `translateX(${offset}%)`;
-        }, { passive: true });
+
+            // 阻止默认行为，防止页面整体滚动
+            if (Math.abs(diff) > 5) {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
         mainApp.addEventListener('touchend', (e) => {
             if (this.isAnimating) return;
