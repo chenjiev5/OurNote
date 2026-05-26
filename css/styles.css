@@ -636,6 +636,14 @@ h2 {
     border-top: 1px dashed var(--border);
 }
 
+/* 手机端 - 日历弹窗新增按钮 */
+@media (max-width: 767px) {
+    .day-detail-add .btn-block {
+        padding: 14px;
+        font-size: 15px;
+    }
+}
+
 /* 个人设置 */
 .ledger-switch-item {
     padding: 16px;
@@ -712,6 +720,11 @@ h2 {
 
 .expense-actions .btn-small {
     flex: 1;
+}
+
+/* 日历弹窗新增按钮 */
+.day-detail-add {
+    margin-bottom: 16px;
 }
 
 /* 手机端适配 */

@@ -1,6 +1,7 @@
 // Tab 导航路由
 const Router = {
     tabs: [
+        { id: 'home', label: '首页', icon: '🏠' },
         { id: 'add', label: '记一笔', icon: '✏️' },
         { id: 'stats', label: '统计', icon: '📊' },
         { id: 'profile', label: '我的', icon: '👤' }
@@ -46,6 +47,10 @@ const Router = {
         // 渲染对应页面内容
         const content = document.getElementById('main-content');
         switch (tabId) {
+            case 'home':
+                // 显示记账本选择页面
+                await window.app.showLedgerSelect();
+                break;
             case 'add':
                 content.innerHTML = await Expense.renderAddForm();
                 Expense.initAddForm();

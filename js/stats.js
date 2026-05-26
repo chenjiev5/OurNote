@@ -321,6 +321,11 @@ const Stats = {
                     <button class="btn-close" onclick="this.closest('.modal-overlay').remove()">×</button>
                 </div>
                 <div class="modal-body">
+                    <div class="day-detail-add">
+                        <button class="btn btn-primary btn-block" onclick="Stats.addExpenseFromPopup('${date}')">
+                            + 新增记录
+                        </button>
+                    </div>
                     ${expenses.length === 0 ? '<p class="empty-text">暂无记录</p>' :
                         expenses.map(e => `
                             <div class="expense-item card">
@@ -536,6 +541,24 @@ const Stats = {
             // 重新显示当天详情
             await this.showDayDetail(expense.date);
         });
+    },
+
+    // 从弹窗新增记录
+    async addExpenseFromPopup(date) {
+        // 关闭当前弹窗
+        document.querySelector('.modal-overlay')?.remove();
+
+        // 切换到记一笔页面，并设置日期
+        if (window.app && window.app.navigate) {
+            await window.app.navigate('add');
+            // 等待表单渲染完成后设置日期
+            setTimeout(() => {
+                const dateInput = document.querySelector('input[name="date"]');
+                if (dateInput) {
+                    dateInput.value = date;
+                }
+            }, 100);
+        }
     },
 
     // 导出 CSV
