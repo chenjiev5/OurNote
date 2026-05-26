@@ -408,7 +408,7 @@ const Stats = {
                      data-date="${dateStr}"
                      onclick="Stats.showDayDetail('${dateStr}')">
                     <span class="day-number">${day}</span>
-                    ${hasExpense ? `<span class="day-amount">¥${this.formatAmount(amount)}</span>` : ''}
+                    ${hasExpense ? `<span class="day-amount">${this.formatAmount(amount)}</span>` : ''}
                 </div>
             `;
         }
