@@ -7,6 +7,13 @@ const Router = {
         { id: 'profile', label: '我的', icon: '👤' }
     ],
 
+    // 可滑动的 Tab（排除首页）
+    swipeableTabs: [
+        { id: 'add', label: '记一笔', icon: '✏️' },
+        { id: 'stats', label: '统计', icon: '📊' },
+        { id: 'profile', label: '我的', icon: '👤' }
+    ],
+
     currentTab: null,
     touchStartX: 0,
     touchEndX: 0,
@@ -23,29 +30,35 @@ const Router = {
 
     // 初始化滑动手势
     initSwipeGesture() {
-        const content = document.getElementById('main-content');
+        // 监听整个主应用区域的滑动
+        const mainApp = document.getElementById('main-app');
 
-        content.addEventListener('touchstart', (e) => {
+        mainApp.addEventListener('touchstart', (e) => {
+            // 排除输入框和按钮的滑动
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' ||
+                e.target.tagName === 'SELECT' || e.target.closest('button')) return;
             if (this.isAnimating) return;
             this.touchStartX = e.changedTouches[0].screenX;
-            content.style.transition = 'none';
+            mainApp.style.transition = 'none';
         }, { passive: true });
 
-        content.addEventListener('touchmove', (e) => {
+        mainApp.addEventListener('touchmove', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' ||
+                e.target.tagName === 'SELECT' || e.target.closest('button')) return;
             if (this.isAnimating) return;
             this.touchEndX = e.changedTouches[0].screenX;
             const diff = this.touchStartX - this.touchEndX;
             const percent = (diff / window.innerWidth) * 100;
             // 限制最大滑动距离
             const offset = Math.max(-30, Math.min(30, percent));
-            content.style.transform = `translateX(${offset}%)`;
+            mainApp.style.transform = `translateX(${offset}%)`;
         }, { passive: true });
 
-        content.addEventListener('touchend', (e) => {
+        mainApp.addEventListener('touchend', (e) => {
             if (this.isAnimating) return;
             this.touchEndX = e.changedTouches[0].screenX;
-            content.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-            content.style.transform = 'translateX(0)';
+            mainApp.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            mainApp.style.transform = 'translateX(0)';
             this.handleSwipe();
         }, { passive: true });
     },
@@ -53,7 +66,7 @@ const Router = {
     // 处理滑动手势
     handleSwipe() {
         const diff = this.touchStartX - this.touchEndX;
-        const currentIndex = this.tabs.findIndex(t => t.id === this.currentTab);
+        const currentIndex = this.swipeableTabs.findIndex(t => t.id === this.currentTab);
 
         if (Math.abs(diff) < this.minSwipeDistance) return;
 
@@ -61,13 +74,19 @@ const Router = {
 
         if (diff > 0) {
             // 向左滑 → 下一个 Tab
-            if (currentIndex < this.tabs.length - 1) {
-                this.switchTab(this.tabs[currentIndex + 1].id);
+            if (currentIndex < this.swipeableTabs.length - 1) {
+                this.switchTab(this.swipeableTabs[currentIndex + 1].id);
+            } else {
+                // 循环回到第一个
+                this.switchTab(this.swipeableTabs[0].id);
             }
         } else {
             // 向右滑 → 上一个 Tab
             if (currentIndex > 0) {
-                this.switchTab(this.tabs[currentIndex - 1].id);
+                this.switchTab(this.swipeableTabs[currentIndex - 1].id);
+            } else {
+                // 循环回到最后一个
+                this.switchTab(this.swipeableTabs[this.swipeableTabs.length - 1].id);
             }
         }
 

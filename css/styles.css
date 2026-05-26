@@ -843,6 +843,11 @@ h2 {
         overflow-x: hidden;
     }
 
+    /* 主应用滑动区域 */
+    #main-app {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     /* 表单 */
     .form-group {
         margin-bottom: 16px;
