@@ -30,27 +30,27 @@ const Router = {
 
     // 初始化滑动手势
     initSwipeGesture() {
-        // 监听整个主应用区域的滑动
-        const mainApp = document.getElementById('main-app');
+        // 监听内容区域的滑动
+        const content = document.getElementById('main-content');
 
-        mainApp.addEventListener('touchstart', (e) => {
+        content.addEventListener('touchstart', (e) => {
             this.touchStartX = e.changedTouches[0].screenX;
-            mainApp.style.transition = 'none';
+            content.style.transition = 'none';
         }, { passive: true });
 
-        mainApp.addEventListener('touchmove', (e) => {
+        content.addEventListener('touchmove', (e) => {
             this.touchEndX = e.changedTouches[0].screenX;
             const diff = this.touchStartX - this.touchEndX;
             const percent = (diff / window.innerWidth) * 100;
             // 限制最大滑动距离
             const offset = Math.max(-30, Math.min(30, percent));
-            mainApp.style.transform = `translateX(${offset}%)`;
+            content.style.transform = `translateX(${offset}%)`;
         }, { passive: true });
 
-        mainApp.addEventListener('touchend', (e) => {
+        content.addEventListener('touchend', (e) => {
             this.touchEndX = e.changedTouches[0].screenX;
-            mainApp.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-            mainApp.style.transform = 'translateX(0)';
+            content.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            content.style.transform = 'translateX(0)';
             this.handleSwipe();
         }, { passive: true });
     },
