@@ -11,6 +11,7 @@ const Router = {
     touchStartX: 0,
     touchEndX: 0,
     minSwipeDistance: 50,
+    isAnimating: false,
 
     init() {
         this.renderSidebar();
@@ -25,11 +26,26 @@ const Router = {
         const content = document.getElementById('main-content');
 
         content.addEventListener('touchstart', (e) => {
+            if (this.isAnimating) return;
             this.touchStartX = e.changedTouches[0].screenX;
+            content.style.transition = 'none';
+        }, { passive: true });
+
+        content.addEventListener('touchmove', (e) => {
+            if (this.isAnimating) return;
+            this.touchEndX = e.changedTouches[0].screenX;
+            const diff = this.touchStartX - this.touchEndX;
+            const percent = (diff / window.innerWidth) * 100;
+            // 限制最大滑动距离
+            const offset = Math.max(-30, Math.min(30, percent));
+            content.style.transform = `translateX(${offset}%)`;
         }, { passive: true });
 
         content.addEventListener('touchend', (e) => {
+            if (this.isAnimating) return;
             this.touchEndX = e.changedTouches[0].screenX;
+            content.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            content.style.transform = 'translateX(0)';
             this.handleSwipe();
         }, { passive: true });
     },
@@ -40,6 +56,8 @@ const Router = {
         const currentIndex = this.tabs.findIndex(t => t.id === this.currentTab);
 
         if (Math.abs(diff) < this.minSwipeDistance) return;
+
+        this.isAnimating = true;
 
         if (diff > 0) {
             // 向左滑 → 下一个 Tab
@@ -52,6 +70,11 @@ const Router = {
                 this.switchTab(this.tabs[currentIndex - 1].id);
             }
         }
+
+        // 重置动画状态
+        setTimeout(() => {
+            this.isAnimating = false;
+        }, 50);
     },
 
     renderSidebar() {
