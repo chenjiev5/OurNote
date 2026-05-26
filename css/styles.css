@@ -761,6 +761,150 @@ h2 {
     flex-shrink: 0;
 }
 
+/* 消费类型统计 */
+.category-stats {
+    margin-top: 20px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+}
+
+.category-stats h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.chart-container svg {
+    transform: rotate(0deg);
+}
+
+.chart-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chart-total {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.chart-label {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.category-item {
+    border-bottom: 1px solid var(--border-light);
+}
+
+.category-item:last-child {
+    border-bottom: none;
+}
+
+.category-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.category-item-header:hover {
+    background: var(--bg-primary);
+    margin: 0 -12px;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.category-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.category-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.category-amount {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.category-toggle {
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+}
+
+.category-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    margin: 0 0 8px 0;
+}
+
+.category-detail.expanded {
+    max-height: 500px;
+    padding: 8px 12px;
+}
+
+.category-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+}
+
+.category-detail-item:last-child {
+    border-bottom: none;
+}
+
+.item-content {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.item-amount {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
 /* 日历弹窗新增按钮 */
 .day-detail-add {
     margin-bottom: 16px;

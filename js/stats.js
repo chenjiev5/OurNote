@@ -70,11 +70,163 @@ const Stats = {
                     <div class="calendar-days" id="calendar-days"></div>
                 </div>
 
+                <!-- 消费类型统计 -->
+                <div class="category-stats" id="category-stats">
+                    <h3>本月消费分类</h3>
+                    <div class="category-chart" id="category-chart"></div>
+                    <div class="category-list" id="category-list"></div>
+                </div>
+
                 <div class="export-section">
                     <button class="btn btn-secondary" id="export-csv-btn">导出 CSV</button>
                 </div>
             </div>
         `;
+    },
+
+    // 获取本月消费数据
+    getMonthExpenses() {
+        if (!this.cachedExpenses) return [];
+        const year = this.currentMonth.getFullYear();
+        const month = this.currentMonth.getMonth();
+        const targetYearMonth = `${year}-${String(month + 1).padStart(2, '0')}`;
+        return this.cachedExpenses.filter(e => this.getYearMonth(e.date) === targetYearMonth);
+    },
+
+    // 计算各类别消费
+    calculateCategoryStats() {
+        const monthExpenses = this.getMonthExpenses();
+        const categoryStats = {};
+
+        monthExpenses.forEach(e => {
+            if (!categoryStats[e.category]) {
+                categoryStats[e.category] = {
+                    total: 0,
+                    items: []
+                };
+            }
+            categoryStats[e.category].total += Number(e.amount);
+            categoryStats[e.category].items.push({
+                content: e.content,
+                amount: Number(e.amount),
+                date: e.date
+            });
+        });
+
+        // 按金额排序
+        const sorted = Object.entries(categoryStats)
+            .map(([category, data]) => ({
+                category,
+                total: data.total,
+                items: data.items.sort((a, b) => b.amount - a.amount)
+            }))
+            .sort((a, b) => b.total - a.total);
+
+        return sorted;
+    },
+
+    // 渲染环形图
+    renderCategoryChart(stats) {
+        const container = document.getElementById('category-chart');
+        if (!container || stats.length === 0) return '';
+
+        const total = stats.reduce((sum, s) => sum + s.total, 0);
+        const colors = ['#E8985E', '#C97A42', '#A0522D', '#8B4513', '#6B3E26',
+                       '#F5B887', '#D4A574', '#B8956A', '#9C7B5F', '#7A5D4A'];
+
+        // 计算每段的百分比和角度
+        let currentAngle = -90;
+        const segments = stats.map((s, i) => {
+            const percent = (s.total / total) * 100;
+            const angle = (percent / 100) * 360;
+            const startAngle = currentAngle;
+            currentAngle += angle;
+            return { ...s, percent, startAngle, endAngle: currentAngle, color: colors[i % colors.length] };
+        });
+
+        // 创建 SVG 环形图
+        const size = 160;
+        const radius = 60;
+        const innerRadius = 35;
+
+        let paths = '';
+        segments.forEach((seg, i) => {
+            if (seg.percent > 0) {
+                const startRad = (seg.startAngle * Math.PI) / 180;
+                const endRad = (seg.endAngle * Math.PI) / 180;
+                const x1 = size/2 + radius * Math.cos(startRad);
+                const y1 = size/2 + radius * Math.sin(startRad);
+                const x2 = size/2 + radius * Math.cos(endRad);
+                const y2 = size/2 + radius * Math.sin(endRad);
+                const ix1 = size/2 + innerRadius * Math.cos(startRad);
+                const iy1 = size/2 + innerRadius * Math.sin(startRad);
+                const ix2 = size/2 + innerRadius * Math.cos(endRad);
+                const iy2 = size/2 + innerRadius * Math.sin(endRad);
+                const largeArc = seg.endAngle - seg.startAngle > 180 ? 1 : 0;
+
+                paths += `<path d="M${x1},${y1} A${radius},${radius} 0 ${largeArc},1 ${x2},${y2} L${ix2},${iy2} A${innerRadius},${innerRadius} 0 ${largeArc},0 ${ix1},${iy1} Z" fill="${seg.color}" onclick="Stats.toggleCategoryDetail('${seg.category}')" style="cursor:pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1"/>`;
+            }
+        });
+
+        return `
+            <div class="chart-container">
+                <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+                    ${paths}
+                    <circle cx="${size/2}" cy="${size/2}" r="${innerRadius-5}" fill="var(--bg-secondary)"/>
+                </svg>
+                <div class="chart-center">
+                    <span class="chart-total">¥${total.toFixed(2)}</span>
+                    <span class="chart-label">本月总计</span>
+                </div>
+            </div>
+        `;
+    },
+
+    // 渲染分类列表
+    renderCategoryList(stats) {
+        const container = document.getElementById('category-list');
+        if (!container || stats.length === 0) return '';
+
+        const colors = ['#E8985E', '#C97A42', '#A0522D', '#8B4513', '#6B3E26',
+                       '#F5B887', '#D4A574', '#B8956A', '#9C7B5F', '#7A5D4A'];
+
+        return stats.map((s, i) => `
+            <div class="category-item">
+                <div class="category-item-header" onclick="Stats.toggleCategoryDetail('${s.category}')">
+                    <div class="category-color" style="background: ${colors[i % colors.length]}"></div>
+                    <span class="category-name">${s.category}</span>
+                    <span class="category-amount">¥${s.total.toFixed(2)}</span>
+                    <span class="category-toggle" id="toggle-${s.category}">▼</span>
+                </div>
+                <div class="category-detail" id="detail-${s.category}">
+                    ${s.items.map(item => `
+                        <div class="category-detail-item">
+                            <span class="item-content">${item.content}</span>
+                            <span class="item-amount">¥${item.amount.toFixed(2)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    },
+
+    // 切换分类详情显示
+    toggleCategoryDetail(category) {
+        const detailEl = document.getElementById(`detail-${category}`);
+        const toggleEl = document.getElementById(`toggle-${category}`);
+        if (detailEl) {
+            detailEl.classList.toggle('expanded');
+            if (toggleEl) {
+                toggleEl.textContent = detailEl.classList.contains('expanded') ? '▲' : '▼';
+            }
+        }
+    },
+
+    // 更新分类统计显示
+    updateCategoryStats() {
+        const stats = this.calculateCategoryStats();
+        document.getElementById('category-chart').innerHTML = this.renderCategoryChart(stats);
+        document.getElementById('category-list').innerHTML = this.renderCategoryList(stats);
     },
 
     // 渲染年视图
@@ -230,6 +382,9 @@ const Stats = {
         }
 
         daysContainer.innerHTML = html;
+
+        // 更新分类统计
+        this.updateCategoryStats();
     },
 
     // 更新年视图
