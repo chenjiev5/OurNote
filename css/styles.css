@@ -447,6 +447,9 @@ h2 {
     transition: all 0.2s;
     background: var(--bg-primary);
     border: 1px solid transparent;
+    padding: 4px;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .calendar-day.empty {
@@ -456,7 +459,6 @@ h2 {
 
 .calendar-day:not(.empty):hover {
     border-color: var(--accent-light);
-    transform: scale(1.05);
 }
 
 .calendar-day.has-expense {
@@ -465,15 +467,20 @@ h2 {
     box-shadow: 0 3px 10px rgba(232, 152, 94, 0.3);
 }
 
-.calendar-day.has-expense:hover {
-    transform: scale(1.08);
-    box-shadow: 0 4px 14px rgba(232, 152, 94, 0.4);
+.day-number {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
 }
 
 .day-amount {
-    font-size: 9px;
-    margin-top: 2px;
+    font-size: 8px;
     font-weight: 500;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 /* 视图切换 */
@@ -772,7 +779,7 @@ h2 {
     margin-top: 20px;
     background: var(--bg-secondary);
     border-radius: 16px;
-    padding: 20px;
+    padding: 16px;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-light);
 }
@@ -780,7 +787,7 @@ h2 {
 .category-stats h3 {
     font-size: 16px;
     font-weight: 600;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     color: var(--text-primary);
 }
 
@@ -1130,10 +1137,19 @@ h2 {
     .calendar-day {
         font-size: 14px;
         border-radius: 10px;
+        padding: 3px;
+        overflow: hidden;
+    }
+
+    .day-number {
+        font-size: 13px;
     }
 
     .day-amount {
-        font-size: 8px;
+        font-size: 7px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     /* 模态框 - 底部弹出 */
