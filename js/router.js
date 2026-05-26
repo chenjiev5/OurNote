@@ -34,34 +34,20 @@ const Router = {
         const mainApp = document.getElementById('main-app');
 
         mainApp.addEventListener('touchstart', (e) => {
-            // 排除输入框和按钮的滑动
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' ||
-                e.target.tagName === 'SELECT' || e.target.closest('button')) return;
-            if (this.isAnimating) return;
             this.touchStartX = e.changedTouches[0].screenX;
             mainApp.style.transition = 'none';
         }, { passive: true });
 
         mainApp.addEventListener('touchmove', (e) => {
-            // 排除输入框和按钮的滑动
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' ||
-                e.target.tagName === 'SELECT' || e.target.closest('button')) return;
-            if (this.isAnimating) return;
             this.touchEndX = e.changedTouches[0].screenX;
             const diff = this.touchStartX - this.touchEndX;
             const percent = (diff / window.innerWidth) * 100;
             // 限制最大滑动距离
             const offset = Math.max(-30, Math.min(30, percent));
             mainApp.style.transform = `translateX(${offset}%)`;
-
-            // 阻止默认行为，防止页面整体滚动
-            if (Math.abs(diff) > 5) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        }, { passive: true });
 
         mainApp.addEventListener('touchend', (e) => {
-            if (this.isAnimating) return;
             this.touchEndX = e.changedTouches[0].screenX;
             mainApp.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
             mainApp.style.transform = 'translateX(0)';
