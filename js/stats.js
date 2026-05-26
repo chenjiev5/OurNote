@@ -704,15 +704,18 @@ const Stats = {
         document.querySelector('.modal-overlay')?.remove();
 
         // 切换到记一笔页面，并设置日期
-        if (window.Router && window.Router.switchTab) {
-            await window.Router.switchTab('add');
-            // 等待表单渲染完成后设置日期
+        const router = window.Router;
+        if (router && router.switchTab) {
+            await router.switchTab('add');
+            // 延迟设置日期，确保表单已渲染
             setTimeout(() => {
                 const dateInput = document.querySelector('input[name="date"]');
                 if (dateInput) {
                     dateInput.value = date;
+                    // 滚动到日期输入框
+                    dateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-            }, 100);
+            }, 200);
         }
     },
 
