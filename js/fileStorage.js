@@ -31,15 +31,18 @@ const FileStorage = {
             const expenses = await DB.getAll('expenses');
             const users = JSON.parse(localStorage.getItem('userList') || '["我"]');
             const currentUser = localStorage.getItem('currentUser') || '我';
+            const defaultLedgerId = localStorage.getItem('defaultLedgerId') || '';
 
             const exportData = {
-                version: '1.0',
+                version: '1.1',
                 exportDate: new Date().toISOString(),
+                appName: '花销追踪',
                 ledgers: ledgers,
                 expenses: expenses,
                 settings: {
                     users: users,
-                    currentUser: currentUser
+                    currentUser: currentUser,
+                    defaultLedgerId: defaultLedgerId
                 }
             };
 
@@ -125,12 +128,14 @@ const FileStorage = {
                 throw new Error('文件格式不正确');
             }
 
-            // 导入数据
+            // 显示导入预览
+            const ledgerNames = importData.ledgers.map(l => l.name).join(', ');
             const confirmed = await Utils.confirm(
                 `确定要导入数据吗？\n\n` +
                 `记账本: ${importData.ledgers.length} 个\n` +
+                `(${ledgerNames})\n` +
                 `支出记录: ${importData.expenses.length} 条\n\n` +
-                `注意：这将替换现有数据！`
+                `注意：这将替换现有所有数据！`
             );
 
             if (!confirmed) return false;
@@ -155,6 +160,9 @@ const FileStorage = {
                 }
                 if (importData.settings.currentUser) {
                     localStorage.setItem('currentUser', importData.settings.currentUser);
+                }
+                if (importData.settings.defaultLedgerId) {
+                    localStorage.setItem('defaultLedgerId', importData.settings.defaultLedgerId);
                 }
             }
 

@@ -8,7 +8,10 @@ const Profile = {
 
                 <div class="card">
                     <h3>当前记账本</h3>
-                    <p class="ledger-name-display">${window.app.currentLedger?.name || ''}</p>
+                    <div class="current-ledger-info">
+                        <p class="ledger-name-display">${window.app.currentLedger?.name || ''}</p>
+                        <button class="btn btn-secondary btn-small" id="rename-ledger-btn">修改名称</button>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -55,6 +58,7 @@ const Profile = {
 
         document.getElementById('create-ledger-btn')?.addEventListener('click', () => this.createLedger());
         document.getElementById('delete-ledger-btn')?.addEventListener('click', () => this.deleteLedger());
+        document.getElementById('rename-ledger-btn')?.addEventListener('click', () => this.renameLedger());
         document.getElementById('add-user-btn')?.addEventListener('click', () => this.addUser());
         document.getElementById('import-btn')?.addEventListener('click', () => this.importFromFile());
         document.getElementById('export-all-btn')?.addEventListener('click', () => this.exportToFile());
@@ -185,6 +189,21 @@ const Profile = {
             await Ledger.delete(window.app.currentLedger.id);
             localStorage.removeItem('defaultLedgerId');
             window.app.showLedgerSelect();
+        }
+    },
+
+    // 修改记账本名称
+    async renameLedger() {
+        const newName = prompt('请输入新的记账本名称：', window.app.currentLedger?.name || '');
+        if (newName && newName.trim() && newName.trim() !== window.app.currentLedger.name) {
+            await Ledger.update(window.app.currentLedger.id, { name: newName.trim() });
+            window.app.currentLedger.name = newName.trim();
+            // 更新本地存储
+            localStorage.setItem('defaultLedgerId', window.app.currentLedger.id);
+            // 刷新页面显示
+            document.querySelector('.ledger-name-display').textContent = newName.trim();
+            document.querySelector('.ledger-name').textContent = newName.trim();
+            Utils.showToast('已修改记账本名称', 'success');
         }
     },
 

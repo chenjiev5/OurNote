@@ -549,8 +549,8 @@ const Stats = {
         document.querySelector('.modal-overlay')?.remove();
 
         // 切换到记一笔页面，并设置日期
-        if (window.app && window.app.navigate) {
-            await window.app.navigate('add');
+        if (window.Router && window.Router.switchTab) {
+            await window.Router.switchTab('add');
             // 等待表单渲染完成后设置日期
             setTimeout(() => {
                 const dateInput = document.querySelector('input[name="date"]');

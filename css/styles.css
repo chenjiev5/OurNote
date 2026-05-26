@@ -722,6 +722,21 @@ h2 {
     flex: 1;
 }
 
+/* 当前记账本信息 */
+.current-ledger-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.current-ledger-info .ledger-name-display {
+    flex: 1;
+}
+
+.current-ledger-info .btn-small {
+    flex-shrink: 0;
+}
+
 /* 日历弹窗新增按钮 */
 .day-detail-add {
     margin-bottom: 16px;
