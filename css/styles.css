@@ -877,11 +877,6 @@ h2 {
         border-radius: 12px;
     }
 
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
     .btn {
         padding: 14px 20px;
         font-size: 15px;
