@@ -146,3 +146,6 @@ const Router = {
         }
     }
 };
+
+// 确保全局可访问
+window.Router = Router;
