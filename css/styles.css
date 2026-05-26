@@ -24,9 +24,10 @@
 }
 
 html, body {
-    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     overscroll-behavior: none;
-    touch-action: pan-y;
 }
 
 body {
@@ -36,9 +37,21 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -webkit-overflow-scrolling: touch;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 #main-app {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     touch-action: none;
 }
 
@@ -857,6 +870,14 @@ h2 {
     /* 主应用滑动区域 */
     #main-app {
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
     }
 
     /* 表单 */

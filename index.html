@@ -98,6 +98,11 @@
     </style>
 
     <script>
+        // 阻止页面整体滚动
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+
         // PWA 安装逻辑
         let deferredPrompt = null;
 
