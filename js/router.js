@@ -11,7 +11,8 @@ const Router = {
 
     init() {
         this.renderSidebar();
-        this.switchTab(this.tabs[0].id);
+        // 默认切换到记一笔页面（首页用于切换记账本）
+        this.switchTab('add');
     },
 
     renderSidebar() {
