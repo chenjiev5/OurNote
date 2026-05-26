@@ -386,8 +386,8 @@ const Stats = {
 
         const monthTotal = monthExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
-        document.getElementById('week-total').textContent = Utils.formatCurrency(weekTotal);
-        document.getElementById('month-total').textContent = Utils.formatCurrency(monthTotal);
+        document.getElementById('week-total').textContent = '¥' + this.formatAmount(weekTotal);
+        document.getElementById('month-total').textContent = '¥' + this.formatAmount(monthTotal);
 
         // 渲染日期格子
         const daysContainer = document.getElementById('calendar-days');
@@ -408,7 +408,7 @@ const Stats = {
                      data-date="${dateStr}"
                      onclick="Stats.showDayDetail('${dateStr}')">
                     <span class="day-number">${day}</span>
-                    ${hasExpense ? `<span class="day-amount">¥${Utils.formatAmount(amount)}</span>` : ''}
+                    ${hasExpense ? `<span class="day-amount">¥${this.formatAmount(amount)}</span>` : ''}
                 </div>
             `;
         }
