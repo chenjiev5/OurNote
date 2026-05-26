@@ -16,7 +16,10 @@ const Router = {
 
     currentTab: null,
     touchStartX: 0,
+    touchStartY: 0,
     touchEndX: 0,
+    touchEndY: 0,
+    isHorizontalSwipe: null,
     minSwipeDistance: 50,
     isAnimating: false,
 
@@ -35,23 +38,46 @@ const Router = {
 
         content.addEventListener('touchstart', (e) => {
             this.touchStartX = e.changedTouches[0].screenX;
+            this.touchStartY = e.changedTouches[0].screenY;
+            this.touchEndX = this.touchStartX;
+            this.touchEndY = this.touchStartY;
+            this.isHorizontalSwipe = null;
             content.style.transition = 'none';
         }, { passive: true });
 
         content.addEventListener('touchmove', (e) => {
             this.touchEndX = e.changedTouches[0].screenX;
-            const diff = this.touchStartX - this.touchEndX;
-            const percent = (diff / window.innerWidth) * 100;
-            // 限制最大滑动距离
-            const offset = Math.max(-30, Math.min(30, percent));
-            content.style.transform = `translateX(${offset}%)`;
+            this.touchEndY = e.changedTouches[0].screenY;
+
+            // 判断滑动方向
+            if (this.isHorizontalSwipe === null) {
+                const diffX = Math.abs(this.touchEndX - this.touchStartX);
+                const diffY = Math.abs(this.touchEndY - this.touchStartY);
+                // 只有水平滑动距离大于垂直距离时才认为是水平滑动
+                this.isHorizontalSwipe = diffX > diffY && diffX > 10;
+            }
+
+            // 只有水平滑动才移动内容
+            if (this.isHorizontalSwipe) {
+                const diff = this.touchStartX - this.touchEndX;
+                const percent = (diff / window.innerWidth) * 100;
+                // 限制最大滑动距离
+                const offset = Math.max(-30, Math.min(30, percent));
+                content.style.transform = `translateX(${offset}%)`;
+            }
         }, { passive: true });
 
         content.addEventListener('touchend', (e) => {
             this.touchEndX = e.changedTouches[0].screenX;
+            this.touchEndY = e.changedTouches[0].screenY;
             content.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
             content.style.transform = 'translateX(0)';
-            this.handleSwipe();
+
+            // 只有水平滑动才切换 Tab
+            if (this.isHorizontalSwipe) {
+                this.handleSwipe();
+            }
+            this.isHorizontalSwipe = null;
         }, { passive: true });
     },
 
