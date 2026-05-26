@@ -144,10 +144,10 @@ const Stats = {
             return { ...s, percent, startAngle, endAngle: currentAngle, color: colors[i % colors.length] };
         });
 
-        // 创建 SVG 环形图
-        const size = 160;
-        const radius = 60;
-        const innerRadius = 35;
+        // 创建 SVG 环形图 - 放大尺寸
+        const size = 200;
+        const radius = 80;
+        const innerRadius = 50;
 
         let paths = '';
         segments.forEach((seg, i) => {
@@ -164,7 +164,7 @@ const Stats = {
                 const iy2 = size/2 + innerRadius * Math.sin(endRad);
                 const largeArc = seg.endAngle - seg.startAngle > 180 ? 1 : 0;
 
-                paths += `<path d="M${x1},${y1} A${radius},${radius} 0 ${largeArc},1 ${x2},${y2} L${ix2},${iy2} A${innerRadius},${innerRadius} 0 ${largeArc},0 ${ix1},${iy1} Z" fill="${seg.color}" onclick="Stats.toggleCategoryDetail('${seg.category}')" style="cursor:pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1"/>`;
+                paths += `<path d="M${x1},${y1} A${radius},${radius} 0 ${largeArc},1 ${x2},${y2} L${ix2},${iy2} A${innerRadius},${innerRadius} 0 ${largeArc},0 ${ix1},${iy1} Z" fill="${seg.color}" onclick="Stats.showCategoryDetail('${seg.category}', ${seg.total}, ${seg.percent})" style="cursor:pointer; transition: all 0.2s;" onmouseover="this.style.opacity=0.8;this.style.filter='brightness(1.1)'" onmouseout="this.style.opacity=1;this.style.filter='brightness(1)'"/>`;
             }
         });
 
@@ -172,14 +172,46 @@ const Stats = {
             <div class="chart-container">
                 <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
                     ${paths}
-                    <circle cx="${size/2}" cy="${size/2}" r="${innerRadius-5}" fill="var(--bg-secondary)"/>
+                    <circle cx="${size/2}" cy="${size/2}" r="${innerRadius-8}" fill="var(--bg-secondary)"/>
                 </svg>
                 <div class="chart-center">
-                    <span class="chart-total">¥${total.toFixed(2)}</span>
+                    <span class="chart-total">¥${this.formatAmount(total)}</span>
                     <span class="chart-label">本月总计</span>
                 </div>
             </div>
         `;
+    },
+
+    // 格式化金额显示
+    formatAmount(amount) {
+        if (amount >= 10000) {
+            return (amount / 10000).toFixed(1) + '万';
+        }
+        return amount.toFixed(2);
+    },
+
+    // 显示分类详情
+    showCategoryDetail(category, total, percent) {
+        const chartCenter = document.querySelector('.chart-center');
+        if (!chartCenter) return;
+
+        // 如果再次点击同一个分类，切换回默认显示
+        if (chartCenter.dataset.currentCategory === category) {
+            const totalAmount = this.calculateCategoryStats().reduce((sum, s) => sum + s.total, 0);
+            chartCenter.innerHTML = `
+                <span class="chart-total">¥${this.formatAmount(totalAmount)}</span>
+                <span class="chart-label">本月总计</span>
+            `;
+            chartCenter.dataset.currentCategory = '';
+            return;
+        }
+
+        chartCenter.innerHTML = `
+            <span class="chart-category-name">${category}</span>
+            <span class="chart-category-amount">¥${this.formatAmount(total)}</span>
+            <span class="chart-category-percent">${percent.toFixed(1)}%</span>
+        `;
+        chartCenter.dataset.currentCategory = category;
     },
 
     // 渲染分类列表
