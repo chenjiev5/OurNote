@@ -51,6 +51,8 @@ const Expense = {
         const users = this.getUserList();
         const usersHtml = users.map(u => `<option value="${u}" ${u === savedUser ? 'selected' : ''}>${u}</option>`).join('');
 
+        const today = Utils.getToday();
+
         return `
             <div class="container">
                 <h2>记一笔</h2>
@@ -84,8 +86,26 @@ const Expense = {
                     </div>
 
                     <div class="form-group">
-                        <label>日期 *</label>
-                        <input type="date" name="date" required value="${Utils.getToday()}">
+                        <label>
+                            日期 *
+                            <button type="button" class="btn-multi-toggle" id="multi-date-toggle" onclick="Expense.toggleMultiDate()">
+                                <span id="multi-date-icon">○</span> 多日
+                            </button>
+                        </label>
+                        <div id="single-date-section">
+                            <input type="date" name="date" required value="${today}">
+                        </div>
+                        <div id="multi-date-section" class="multi-date-section hidden">
+                            <div class="date-range-input">
+                                <input type="date" id="date-start" value="${today}">
+                                <span>至</span>
+                                <input type="date" id="date-end" value="${today}">
+                                <button type="button" class="btn btn-secondary btn-small" onclick="Expense.selectDateRange()">选择区间</button>
+                            </div>
+                            <div class="selected-dates" id="selected-dates">
+                                <div class="selected-date-chip" data-date="${today}">${today} <span class="remove-date" onclick="Expense.removeDate('${today}')">×</span></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-row">
@@ -148,6 +168,76 @@ const Expense = {
         }
     },
 
+    // 多日模式状态
+    multiDateMode: false,
+    selectedDates: [],
+
+    // 切换多日模式
+    toggleMultiDate() {
+        this.multiDateMode = !this.multiDateMode;
+        const icon = document.getElementById('multi-date-icon');
+        const singleSection = document.getElementById('single-date-section');
+        const multiSection = document.getElementById('multi-date-section');
+
+        if (this.multiDateMode) {
+            icon.textContent = '●';
+            singleSection.classList.add('hidden');
+            multiSection.classList.remove('hidden');
+        } else {
+            icon.textContent = '○';
+            singleSection.classList.remove('hidden');
+            multiSection.classList.add('hidden');
+            this.selectedDates = [];
+        }
+    },
+
+    // 选择日期区间
+    selectDateRange() {
+        const startInput = document.getElementById('date-start');
+        const endInput = document.getElementById('date-end');
+        const start = new Date(startInput.value);
+        const end = new Date(endInput.value);
+
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            Utils.showToast('请选择有效的日期范围', 'error');
+            return;
+        }
+
+        if (start > end) {
+            Utils.showToast('开始日期不能晚于结束日期', 'error');
+            return;
+        }
+
+        // 生成区间内所有日期
+        const dates = [];
+        const current = new Date(start);
+        while (current <= end) {
+            const dateStr = current.toISOString().substring(0, 10);
+            if (!this.selectedDates.includes(dateStr)) {
+                dates.push(dateStr);
+            }
+            current.setDate(current.getDate() + 1);
+        }
+
+        this.selectedDates = [...this.selectedDates, ...dates].sort();
+        this.renderSelectedDates();
+        Utils.showToast(`已添加 ${dates.length} 个日期`, 'success');
+    },
+
+    // 移除单个日期
+    removeDate(date) {
+        this.selectedDates = this.selectedDates.filter(d => d !== date);
+        this.renderSelectedDates();
+    },
+
+    // 渲染已选日期
+    renderSelectedDates() {
+        const container = document.getElementById('selected-dates');
+        container.innerHTML = this.selectedDates.map(date => `
+            <div class="selected-date-chip" data-date="${date}">${date} <span class="remove-date" onclick="Expense.removeDate('${date}')">×</span></div>
+        `).join('') || '<span class="empty-dates">请选择日期</span>';
+    },
+
     // 初始化表单事件
     initAddForm() {
         const form = document.getElementById('expense-form');
@@ -175,11 +265,11 @@ const Expense = {
         // 表单提交
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            await this.saveExpense(new FormData(form));
+            await this.saveExpenseWithDates(new FormData(form));
         });
     },
 
-    // 保存支出记录
+    // 保存支出记录（单条）
     async saveExpense(formData) {
         const expense = {
             id: Utils.generateId(),
@@ -195,12 +285,47 @@ const Expense = {
             createdAt: Date.now()
         };
 
-        // 等待数据库操作完成
         await DB.add('expenses', expense);
-        Utils.showToast('已保存', 'success');
+        return expense;
+    },
 
-        // 等待一下确保数据已写入
-        await new Promise(resolve => setTimeout(resolve, 100));
+    // 保存支出记录（处理多日模式）
+    async saveExpenseWithDates(formData) {
+        let dates = [];
+
+        if (this.multiDateMode && this.selectedDates.length > 0) {
+            dates = [...this.selectedDates];
+        } else {
+            dates = [formData.get('date')];
+        }
+
+        const baseExpense = {
+            ledgerId: window.app.currentLedger.id,
+            content: formData.get('content'),
+            amount: Utils.formatAmount(formData.get('amount')),
+            category: formData.get('category'),
+            province: formData.get('province') || '重庆市',
+            city: formData.get('city') || '渝中区',
+            note: formData.get('note') || '',
+            createdBy: window.app.currentUser || '我',
+            createdAt: Date.now()
+        };
+
+        // 为每个日期创建一条记录
+        for (const date of dates) {
+            const expense = {
+                ...baseExpense,
+                id: Utils.generateId(),
+                date: date
+            };
+            await DB.add('expenses', expense);
+        }
+
+        Utils.showToast(`已保存 ${dates.length} 条记录`, 'success');
+
+        // 重置
+        this.selectedDates = [];
+        this.multiDateMode = false;
 
         // 刷新统计页面数据
         if (window.Stats && window.Stats.refresh) {

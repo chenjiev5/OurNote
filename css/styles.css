@@ -1418,3 +1418,84 @@ h2 {
     padding: 32px 20px;
     font-size: 15px;
 }
+
+/* 多日选择模式 */
+.btn-multi-toggle {
+    margin-left: 12px;
+    padding: 6px 12px;
+    font-size: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-multi-toggle:hover {
+    border-color: var(--accent-light);
+    color: var(--accent);
+}
+
+.multi-date-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.date-range-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.date-range-input input[type="date"] {
+    flex: 1;
+    min-width: 120px;
+}
+
+.date-range-input span {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.selected-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 40px;
+    padding: 12px;
+    background: var(--bg-primary);
+    border-radius: 12px;
+    border: 1.5px dashed var(--border);
+}
+
+.selected-date-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.remove-date {
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0.8;
+}
+
+.remove-date:hover {
+    opacity: 1;
+}
+
+.empty-dates {
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 8px;
+}
