@@ -635,7 +635,7 @@ h2 {
 
 .expense-content {
     font-weight: 600;
-    font-size: 15px;
+    font-size: 17px;
     color: var(--text-primary);
     margin-bottom: 4px;
 }
@@ -740,9 +740,9 @@ h2 {
 }
 
 .btn-small {
-    padding: 10px 16px;
-    font-size: 14px;
-    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 8px;
 }
 
 /* 操作按钮 */
@@ -1214,7 +1214,7 @@ h2 {
     }
 
     .expense-content {
-        font-size: 15px;
+        font-size: 16px;
     }
 
     .expense-amount {
